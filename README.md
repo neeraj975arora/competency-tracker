@@ -78,6 +78,7 @@ Set these in `.env` for Docker, or as environment variables for Python (for exam
 | `TOKEN_HOURS` | `8` | How long a sign-in lasts |
 | `COOKIE_SECURE` | `0` | Set to `1` when the site is reached over https (for example a tunnel link) |
 | `TRACKER_DB` | `tracker.db` next to `app.py` | Database file path (set to `/data/tracker.db` in Docker) |
+| `DEFAULT_PROFILE` | `Data Engineer Coaching` | Profile preselected for new users. Falls back to the first profile if the name doesn't exist. |
 
 ## Project layout
 

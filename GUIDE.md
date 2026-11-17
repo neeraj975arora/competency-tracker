@@ -66,7 +66,7 @@ docker compose exec tracker python manage.py create-user name@impressico.com --p
 docker compose exec tracker python manage.py create-user boss@impressico.com --role admin
 ```
 
-- Without `--profile`, a user gets the first profile in the list.
+- Without `--profile`, a user gets the default profile, **Data Engineer Coaching**. The admin form also preselects it.
 - Admins do not need a profile.
 - The temporary password is printed once.
 
