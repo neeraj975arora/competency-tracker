@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Competency Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>Claude Automation Analyst</h1>
+        <p>Competency tracker</p>
+      </div>
+      {% if signed_in %}
+      <nav class="nav">
+        <a href="{{ url_for('index') }}">My tracker</a>
+        {% if is_admin_user %}<a href="{{ url_for('admin_home') }}">Admin</a>
+        <a href="{{ url_for('admin_profiles') }}">Profiles</a>{% endif %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <button type="submit" class="light">Sign out</button>
+        </form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

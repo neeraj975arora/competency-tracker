@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.name }} · Competency Tracker{% endblock %}
+{% macro post_button(url, label, cls, token) %}
+<form method="post" action="{{ url }}" class="inline">
+  <input type="hidden" name="csrf" value="{{ token }}">
+  <button type="submit" class="{{ cls }}">{{ label }}</button>
+</form>
+{% endmacro %}
+{% block content %}
+<p class="muted"><a href="{{ url_for('admin_home') }}">Admin</a> · <a href="{{ url_for('admin_profiles') }}">Profiles</a></p>
+<h2>{{ profile.name }}</h2>
+{% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+
+<section class="card">
+  <h3>Add domain</h3>
+  <form method="post" action="{{ url_for('admin_add_domain', pid=profile.id) }}" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <label>Domain name
+      <input type="text" name="name" maxlength="80" required placeholder="e.g. A. Technical Skills">
+    </label>
+    <label>Colour
+      <select name="color">
+        {% for c in colors %}<option value="{{ c }}">{{ c|capitalize }}</option>{% endfor %}
+      </select>
+    </label>
+    <button type="submit">Add domain</button>
+  </form>
+</section>
+
+{% for d in tree %}
+<section class="area {{ d.color }}">
+  <div class="area-head row-between">
+    <span>{{ d.name }} <span class="muted">({{ d.color }})</span></span>
+    {{ post_button(url_for('admin_delete_domain', did=d.id), 'Delete domain', 'danger small', csrf_token) }}
+  </div>
+
+  <form method="post" action="{{ url_for('admin_add_subdomain', did=d.id) }}" class="inline-add">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="text" name="name" maxlength="80" required placeholder="New sub-domain name" aria-label="New sub-domain name">
+    <button type="submit" class="secondary small">Add sub-domain</button>
+  </form>
+
+  {% for s in d.subdomains %}
+  <div class="subject-head row-between">
+    <span>{{ s.name }}</span>
+    {{ post_button(url_for('admin_delete_subdomain', sid=s.id), 'Delete sub-domain', 'danger small', csrf_token) }}
+  </div>
+  {% for t in s.topics %}
+  <div class="topic-row row-between">
+    <span>{{ t.name }}</span>
+    {{ post_button(url_for('admin_delete_topic', tid=t.id), 'Remove', 'danger small', csrf_token) }}
+  </div>
+  {% else %}
+  <div class="topic-row muted">No topics yet.</div>
+  {% endfor %}
+  <form method="post" action="{{ url_for('admin_add_topics', sid=s.id) }}" class="topics-add">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <textarea name="topics" rows="2" placeholder="Topics, one per line" aria-label="Topics for {{ s.name }}"></textarea>
+    <div><button type="submit" class="secondary small">Add topics to {{ s.name }}</button></div>
+  </form>
+  {% else %}
+  <div class="topic-row muted">No sub-domains yet.</div>
+  {% endfor %}
+</section>
+{% else %}
+<p class="muted">No domains yet. Add one above.</p>
+{% endfor %}
+
+<section class="card">
+  <h3>Delete profile</h3>
+  <p class="muted">A profile can only be deleted when no users are assigned to it.</p>
+  {{ post_button(url_for('admin_delete_profile', pid=profile.id), 'Delete this profile', 'danger', csrf_token) }}
+</section>
+{% endblock %}

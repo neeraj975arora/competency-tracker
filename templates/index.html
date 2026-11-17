@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Competency Tracker{% endblock %}
+{% block content %}
+{% set dis = '' if editable else 'disabled' %}
+
+{% if saved %}<div class="msg ok">Your status has been saved.</div>{% endif %}
+{% if changed %}<div class="msg ok">Your password has been changed.</div>{% endif %}
+
+<section class="card">
+  <div class="who">
+    <span>Signed in as <strong>{{ me }}</strong></span>
+    <a href="{{ url_for('change_password') }}">Change password</a>
+  </div>
+  {% if is_admin_user %}
+  <form method="get" action="{{ url_for('index') }}" class="view-row">
+    <label for="person">View an employee's status (read-only)</label>
+    <div class="name-row">
+      <input type="email" id="person" name="person" placeholder="name@{{ allowed_domain }}">
+      <button type="submit" class="secondary">View</button>
+    </div>
+    {% if not editable %}
+    <p class="muted">Viewing {{ viewing }}. <a href="{{ url_for('index') }}">Back to my status</a></p>
+    {% endif %}
+  </form>
+  {% endif %}
+</section>
+
+{% if not profile_name %}
+<section class="card">
+  {% if editable %}
+  <p>No competency profile is assigned to you yet. Ask your administrator.</p>
+  {% else %}
+  <p>{{ viewing }} has no competency profile assigned.</p>
+  {% endif %}
+</section>
+{% else %}
+
+<section class="card">
+  <strong>Profile: {{ profile_name }}</strong>
+  <p class="muted" style="margin: 4px 0 0;">Viewing {{ viewing }}{% if not editable %} (read-only){% endif %}</p>
+</section>
+
+<section class="card weak">
+  <strong>Summary</strong>
+  <div class="summary">
+    {% for st in statuses %}
+    <div class="stat"><b>{{ counts[st] }}</b><span>{{ st }}</span></div>
+    {% endfor %}
+  </div>
+  <strong>Weak areas ({{ weak|length }})</strong>
+  <p class="muted" style="margin: 4px 0 0;">Subtopics rated Weak or Learning.</p>
+  {% if weak %}
+    <ul>
+      {% for w in weak %}
+      <li><strong>{{ w.name }}</strong> - {{ w.status }} <span class="muted">({{ w.area }})</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No weak areas flagged yet.</p>
+  {% endif %}
+</section>
+
+{% if editable %}
+<form method="post" action="{{ url_for('save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+{% endif %}
+
+  {% for area in areas %}
+  <section class="area {{ area.color }}">
+    <div class="area-head">{{ area.name }}</div>
+    {% for sub in area.subs %}
+    <div class="subject-head">{{ sub.name }}</div>
+    {% for t in sub.topics %}
+    <div class="sub">
+      <div><strong>{{ t.name }}</strong></div>
+      <div>
+        <label class="sr" for="status_{{ t.id }}">Status for {{ sub.name }}: {{ t.name }}</label>
+        <select id="status_{{ t.id }}" name="status_{{ t.id }}" {{ dis }}>
+          {% for st in statuses %}
+          <option value="{{ st }}" {% if st == t.status %}selected{% endif %}>{{ st }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="sr" for="notes_{{ t.id }}">Notes for {{ sub.name }}: {{ t.name }}</label>
+        <input type="text" id="notes_{{ t.id }}" name="notes_{{ t.id }}" value="{{ t.notes }}" maxlength="300" placeholder="Notes (optional)" {{ dis }}>
+      </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+{% if editable %}
+  <div class="actions">
+    <button type="submit">Save my status</button>
+  </div>
+</form>
+{% endif %}
+
+{% endif %}
+{% endblock %}

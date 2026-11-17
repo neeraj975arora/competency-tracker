@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Competency profiles · Competency Tracker{% endblock %}
+{% block content %}
+<p class="muted"><a href="{{ url_for('admin_home') }}">Admin</a> · Competency profiles</p>
+{% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+{% if message %}<div class="msg ok">{{ message }}</div>{% endif %}
+
+<section class="card">
+  <h2>New profile</h2>
+  <form method="post" action="{{ url_for('admin_create_profile') }}" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <label>Profile name
+      <input type="text" name="name" maxlength="80" required placeholder="e.g. Data Engineer Coaching">
+    </label>
+    <button type="submit">Create profile</button>
+  </form>
+  <p class="muted">A new profile starts empty. Open it to add domains, sub-domains and topics.</p>
+</section>
+
+<section class="card">
+  <h2>Profiles ({{ profiles|length }})</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Domains</th><th>Users</th><th></th></tr></thead>
+      <tbody>
+        {% for p in profiles %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td>{{ p.domain_count }}</td>
+          <td>{{ p.user_count }}</td>
+          <td><a href="{{ url_for('admin_profile', pid=p.id) }}">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="muted">No profiles yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

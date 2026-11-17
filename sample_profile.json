@@ -1,0 +1,28 @@
+{
+  "name": "Data Engineer Coaching",
+  "domains": [
+    {
+      "name": "Data Engineering Tools",
+      "color": "blue",
+      "subdomains": [
+        {"name": "Python", "topics": ["Lists", "Dictionaries", "Functions", "File I/O", "Serialization"]},
+        {"name": "SQL Server", "topics": ["Fundamentals", "Joins", "Views", "Query writing", "Performance"]},
+        {"name": "PySpark", "topics": ["DataFrames", "RDD", "Joins", "Cache and persistence", "Performance tuning"]}
+      ]
+    },
+    {
+      "name": "Analytical Thinking",
+      "color": "orange",
+      "subdomains": [
+        {"name": "Problem solving", "topics": ["Debugging", "Edge cases", "Root-cause analysis"]}
+      ]
+    },
+    {
+      "name": "Communication",
+      "color": "teal",
+      "subdomains": [
+        {"name": "Technical writing", "topics": ["Explaining designs", "Status updates"]}
+      ]
+    }
+  ]
+}

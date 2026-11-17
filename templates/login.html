@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Competency Tracker{% endblock %}
+{% block content %}
+<form method="post" action="{{ url_for('login') }}" class="card narrow">
+  <h2>Sign in</h2>
+  {% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+  <label for="email">Office email</label>
+  <input type="email" id="email" name="email" value="{{ email }}" placeholder="name@{{ allowed_domain }}" autocomplete="username" required>
+  <label for="password">Password</label>
+  <input type="password" id="password" name="password" autocomplete="current-password" required>
+  <button type="submit">Sign in</button>
+  <p class="muted">Accounts are created by the administrator. Ask them if you need access.</p>
+</form>
+{% endblock %}

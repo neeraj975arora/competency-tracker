@@ -1,0 +1,43 @@
+{
+  "name": "Claude Automation Analyst (14 competencies)",
+  "domains": [
+    {
+      "name": "A. Claude Core",
+      "color": "blue",
+      "subdomains": [
+        {"name": "Competencies", "topics": [
+          "A1 Prompting",
+          "A2 Output evaluation",
+          "A3 Product, model choice",
+          "A4 Workflow integration",
+          "A5 Config and knowledge",
+          "A6 Governance and risk",
+          "A7 Troubleshooting"
+        ]}
+      ]
+    },
+    {
+      "name": "B. Consulting Craft",
+      "color": "orange",
+      "subdomains": [
+        {"name": "Competencies", "topics": [
+          "B1 Process analysis",
+          "B2 Business functions",
+          "B3 Value measurement",
+          "B4 Change communication"
+        ]}
+      ]
+    },
+    {
+      "name": "C. Build and Run",
+      "color": "teal",
+      "subdomains": [
+        {"name": "Competencies", "topics": [
+          "C1 Data handling",
+          "C2 Claude tooling",
+          "C3 Testing and quality"
+        ]}
+      ]
+    }
+  ]
+}

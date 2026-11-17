@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Admin · Competency Tracker{% endblock %}
+{% macro action_button(email, action, label, cls="secondary small") %}
+<form method="post" action="{{ url_for('admin_user_action') }}" class="inline">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <input type="hidden" name="email" value="{{ email }}">
+  <input type="hidden" name="action" value="{{ action }}">
+  <button type="submit" class="{{ cls }}">{{ label }}</button>
+</form>
+{% endmacro %}
+{% block content %}
+{% if issued %}
+<section class="card issued">
+  <h3>{{ issued.title }}: {{ issued.email }}</h3>
+  <p>Temporary password (shown once, copy it now):</p>
+  <p><span class="secret">{{ issued.password }}</span></p>
+  <p class="muted">The user must set their own password at first sign-in. This password will not be shown again.</p>
+</section>
+{% endif %}
+{% if message %}<div class="msg ok">{{ message }}</div>{% endif %}
+{% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+
+<section class="card">
+  <h2>Add user</h2>
+  <form method="post" action="{{ url_for('admin_add_user') }}" class="grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <label>Office email
+      <input type="email" name="email" placeholder="name@{{ allowed_domain }}" required>
+    </label>
+    <label>Role
+      <select name="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </label>
+    <label>Competency profile
+      <select name="profile_id">
+        <option value="">No profile</option>
+        {% for p in profiles %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <button type="submit">Create account</button>
+  </form>
+  <p class="muted">A temporary password is generated and shown once on this page.</p>
+</section>
+
+<section class="card">
+  <h2>Users ({{ users|length }})</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Email</th><th>Role</th><th>Status</th><th>Competency profile</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            {{ u.email }}
+            {% if u.must_change_password %}<div class="muted">must change password</div>{% endif %}
+          </td>
+          <td>{{ u.role }}</td>
+          <td>{{ 'active' if u.active else 'disabled' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin_user_action') }}" class="inline">
+              <input type="hidden" name="csrf" value="{{ csrf_token }}">
+              <input type="hidden" name="email" value="{{ u.email }}">
+              <input type="hidden" name="action" value="profile">
+              <select name="profile_id" aria-label="Profile for {{ u.email }}">
+                <option value="">No profile</option>
+                {% for p in profiles %}
+                <option value="{{ p.id }}" {% if p.id == u.profile_id %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="secondary small">Save</button>
+            </form>
+          </td>
+          <td class="actions-cell">
+            {{ action_button(u.email, 'reset', 'Reset password') }}
+            {% if u.active %}
+              {% if u.email != me %}{{ action_button(u.email, 'disable', 'Disable', 'danger small') }}{% endif %}
+            {% else %}
+              {{ action_button(u.email, 'enable', 'Enable') }}
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="muted">No users yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+# Passwords and secrets - never commit
+PASSWORDS.md
+.jwt_secret
+.env
+
+# Local data
+tracker.db
+*.db
+*.sqlite3
+
+# Python and tooling
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
