@@ -806,3 +806,18 @@ def test_manage_py_entry_point_lists_commands():
     assert result.returncode == 0, result.stderr
     for command in ["create-user", "import-profile", "reset-password", "list-users"]:
         assert command in result.stdout
+
+
+# ---------- default profile ----------
+
+def test_new_users_default_to_data_engineer_profile(app_env, cli, make_user, admin):
+    result = cli.invoke(args=["import-profile", str(tracker.BASE_DIR / "sample_profile.json")])
+    assert result.exit_code == 0, result.output
+    de_id = tracker.query_one("SELECT id FROM profiles WHERE name = 'Data Engineer Coaching'")["id"]
+
+    make_user("default.check@impressico.com")
+    row = tracker.query_one("SELECT profile_id FROM users WHERE email = ?", ("default.check@impressico.com",))
+    assert row["profile_id"] == de_id
+
+    page = admin["client"].get("/admin").get_data(as_text=True)
+    assert f'value="{de_id}" selected' in page

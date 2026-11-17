@@ -39,6 +39,9 @@ EMAIL_RE = re.compile(r"^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$")
 STATUSES = ["Not rated", "Weak", "Learning", "Practising", "Confident"]
 WEAK_STATUSES = {"Weak", "Learning"}
 
+# Profile preselected for new user accounts. Falls back to the first profile if it does not exist.
+DEFAULT_PROFILE_NAME = os.environ.get("DEFAULT_PROFILE", "Data Engineer Coaching")
+
 # Domain colours offered in the admin editor: (text colour, light background).
 COLOR_CHOICES = {
     "blue": ("#2b6cb0", "#dce9f8"),
@@ -315,6 +318,14 @@ def normalise_email(raw):
     return email
 
 
+def default_profile_id():
+    """Id of DEFAULT_PROFILE_NAME, or the first profile if that name does not exist."""
+    row = query_one("SELECT id FROM profiles WHERE name = ?", (DEFAULT_PROFILE_NAME,))
+    if row is None:
+        row = query_one("SELECT id FROM profiles ORDER BY id LIMIT 1")
+    return row["id"] if row else None
+
+
 def parse_profile_id(raw):
     try:
         pid = int(raw)
@@ -581,7 +592,8 @@ def render_admin(issued=None, message=None, error=None, status=200):
            ORDER BY u.email""")
     profiles = query_all("SELECT id, name FROM profiles ORDER BY name")
     return render_template("admin.html", users=users, profiles=profiles, issued=issued,
-                           message=message, error=error, me=g.auth["user"]["email"]), status
+                           message=message, error=error, me=g.auth["user"]["email"],
+                           default_profile=default_profile_id()), status
 
 
 @app.route("/admin")
@@ -844,7 +856,7 @@ def create_user(email, role, profile_name):
         if prof is None:
             raise click.ClickException(f"No profile named '{profile_name}'.")
     elif role == "user":
-        prof = query_one("SELECT id FROM profiles ORDER BY id LIMIT 1")
+        prof = query_one("SELECT id FROM profiles WHERE id = ?", (default_profile_id(),))
     else:
         prof = None  # admins do not need a profile unless one is named
     if prof is None and role == "user":
