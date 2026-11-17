@@ -21,7 +21,7 @@ from flask import Flask, abort, g, redirect, render_template, request, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "tracker.db"
+DB_PATH = Path(os.environ.get("TRACKER_DB", BASE_DIR / "tracker.db"))  # /data/tracker.db in Docker
 SECRET_FILE = BASE_DIR / ".jwt_secret"
 
 # Settings (can be overridden with environment variables)

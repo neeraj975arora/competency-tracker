@@ -69,3 +69,37 @@ python -m pytest tests/e2e
 ```
 
 The browser tests open a visible Chrome window. To run them without a window, set `$env:HEADLESS = "1"` first. The tests use temporary databases, so `tracker.db` is not touched.
+
+## Run with Docker
+
+Requires Docker Desktop. Create the `.env` file once (see `.env.example`), then:
+
+```bash
+cd "C:\Users\ADMIN\Documents\ai enablement\11-17-2026\competency-tracker"
+docker compose up -d --build
+```
+
+Open **http://127.0.0.1:5000**. The database is stored in the Docker volume `tracker-data`, so it survives restarts and rebuilds.
+
+Useful commands:
+
+```bash
+docker compose logs -f tracker                                   # follow the server log
+docker compose exec tracker python manage.py list-users          # run any manage.py command
+docker compose exec tracker python manage.py create-user name@impressico.com --profile "Data Engineer Coaching"
+docker compose down                                              # stop (keeps data)
+docker compose down -v                                           # stop and DELETE all data
+```
+
+To move your existing `tracker.db` into the container's volume, stop the container first and copy the file in:
+
+```bash
+docker compose down
+docker run --rm -v competency-tracker_tracker-data:/data -v "${PWD}:/src" alpine cp /src/tracker.db /data/tracker.db
+docker compose up -d
+```
+
+Notes:
+- The container listens only on this computer (`127.0.0.1:5000`). Edit `docker-compose.yml` to change that.
+- `.env` holds `JWT_SECRET`. Keep it private and never commit it.
+- Set `COOKIE_SECURE=1` in `.env` when the site is reached over https.

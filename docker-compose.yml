@@ -1,0 +1,18 @@
+services:
+  tracker:
+    build: .
+    image: competency-tracker:latest
+    container_name: competency-tracker
+    # Bound to this computer only. Change to "5000:5000" to allow other machines on your network.
+    ports:
+      - "127.0.0.1:5000:5000"
+    env_file:
+      - .env
+    environment:
+      TRACKER_DB: /data/tracker.db
+    volumes:
+      - tracker-data:/data
+    restart: unless-stopped
+
+volumes:
+  tracker-data:

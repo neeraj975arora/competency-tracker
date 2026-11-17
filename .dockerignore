@@ -1,0 +1,20 @@
+# Keep secrets, local data and development files out of the image
+PASSWORDS.md
+.env
+.jwt_secret
+*.db
+*.sqlite3
+.git
+.github
+.gitignore
+.pytest_cache
+__pycache__
+*.pyc
+.venv
+venv
+tests
+pytest.ini
+requirements-dev.txt
+Dockerfile
+docker-compose.yml
+.dockerignore
